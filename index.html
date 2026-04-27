@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stjärnsamlaren</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <div class="topbar">
+        <h1>Stjärnsamlaren</h1>
+        <div class="score">
+          Poäng: <span id="score">0</span>
+          <span class="lives">Liv: <span id="lives">3</span></span>
+          <button id="restart" type="button">Starta om</button>
+        </div>
+      </div>
+
+      <canvas id="game" width="720" height="420" aria-label="Spelyta"></canvas>
+
+      <p class="hint">Använd piltangenterna eller WASD för att samla stjärnor.</p>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
