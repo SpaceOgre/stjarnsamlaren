@@ -60,10 +60,97 @@ canvas {
   aspect-ratio: 12 / 7;
   border: 4px solid #f7fbff;
   background: #245c4f;
+  touch-action: none;
+}
+
+.touch-controls {
+  width: 172px;
+  margin: 14px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(2, 52px);
+  gap: 8px;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+}
+
+.control-button {
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  padding: 0;
+  border: 3px solid #f7fbff;
+  border-radius: 8px;
+  background: #ffd84d;
+  color: #172033;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.control-button:active,
+.control-button.is-pressed {
+  background: #ffb92e;
+  transform: translateY(1px);
+}
+
+.control-button.up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.control-button.left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.control-button.down {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.control-button.right {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .hint {
   margin: 12px 0 0;
   color: #dce8f2;
   font-size: 16px;
+}
+
+@media (pointer: fine) and (min-width: 760px) {
+  .touch-controls {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    align-items: start;
+    padding: 14px 0;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .score {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+  }
+
+  .lives,
+  button {
+    margin-left: 0;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
 }

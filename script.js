@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 const scoreElement = document.querySelector("#score");
 const livesElement = document.querySelector("#lives");
 const restartButton = document.querySelector("#restart");
+const controlButtons = document.querySelectorAll("[data-control]");
 
 const player = {
   x: 80,
@@ -27,6 +28,12 @@ const enemy = {
 };
 
 const keys = {};
+const touchControls = {
+  left: false,
+  right: false,
+  up: false,
+  down: false,
+};
 let score = 0;
 let lives = 3;
 let gameWon = false;
@@ -34,6 +41,10 @@ let winTime = 0;
 
 window.addEventListener("keydown", (event) => {
   keys[event.key.toLowerCase()] = true;
+
+  if (event.key.startsWith("Arrow")) {
+    event.preventDefault();
+  }
 });
 
 window.addEventListener("keyup", (event) => {
@@ -44,11 +55,37 @@ restartButton.addEventListener("click", () => {
   resetGame();
 });
 
+controlButtons.forEach((button) => {
+  const direction = button.dataset.control;
+
+  button.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    touchControls[direction] = true;
+    button.classList.add("is-pressed");
+    button.setPointerCapture(event.pointerId);
+  });
+
+  button.addEventListener("pointerup", () => {
+    touchControls[direction] = false;
+    button.classList.remove("is-pressed");
+  });
+
+  button.addEventListener("pointercancel", () => {
+    touchControls[direction] = false;
+    button.classList.remove("is-pressed");
+  });
+
+  button.addEventListener("pointerleave", () => {
+    touchControls[direction] = false;
+    button.classList.remove("is-pressed");
+  });
+});
+
 function movePlayer() {
-  if (keys.arrowleft || keys.a) player.x -= player.speed;
-  if (keys.arrowright || keys.d) player.x += player.speed;
-  if (keys.arrowup || keys.w) player.y -= player.speed;
-  if (keys.arrowdown || keys.s) player.y += player.speed;
+  if (keys.arrowleft || keys.a || touchControls.left) player.x -= player.speed;
+  if (keys.arrowright || keys.d || touchControls.right) player.x += player.speed;
+  if (keys.arrowup || keys.w || touchControls.up) player.y -= player.speed;
+  if (keys.arrowdown || keys.s || touchControls.down) player.y += player.speed;
 
   player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
   player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
