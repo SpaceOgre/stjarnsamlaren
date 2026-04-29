@@ -62,7 +62,7 @@ button:hover {
 
 .play-area {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 186px;
+  grid-template-columns: minmax(0, 1fr) 176px;
   align-items: center;
   gap: 16px;
 }
@@ -78,13 +78,11 @@ canvas {
 }
 
 .touch-controls {
-  width: 186px;
+  width: 176px;
+  height: 176px;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(3, 58px);
-  grid-template-rows: repeat(2, 58px);
-  gap: 6px;
-  justify-content: center;
+  place-items: center;
   touch-action: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -92,48 +90,37 @@ canvas {
   -webkit-tap-highlight-color: transparent;
 }
 
-.control-button {
-  width: 58px;
-  height: 58px;
-  margin: 0;
-  padding: 0;
-  border: 3px solid #f7fbff;
-  border-radius: 8px;
+.joystick-base {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border: 4px solid #f7fbff;
+  border-radius: 50%;
+  background: rgba(255, 216, 77, 0.28);
+  box-shadow: inset 0 0 0 6px rgba(255, 255, 255, 0.16);
+  touch-action: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.joystick-stick {
+  position: absolute;
+  left: calc(50% - 31px);
+  top: calc(50% - 31px);
+  width: 62px;
+  height: 62px;
+  border: 3px solid #172033;
+  border-radius: 50%;
   background: #ffd84d;
-  color: #172033;
-  font-size: 30px;
-  line-height: 1;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.22);
   touch-action: none;
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
-}
-
-.control-button:active,
-.control-button.is-pressed {
-  background: #ffb92e;
-  transform: translateY(1px);
-}
-
-.control-button.up {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.control-button.left {
-  grid-column: 1;
-  grid-row: 2;
-}
-
-.control-button.down {
-  grid-column: 2;
-  grid-row: 2;
-}
-
-.control-button.right {
-  grid-column: 3;
-  grid-row: 2;
+  will-change: transform;
 }
 
 .hint {
@@ -178,17 +165,14 @@ canvas {
   }
 
   .touch-controls {
-    width: 172px;
+    width: 160px;
+    height: 160px;
     margin: 12px auto 0;
-    grid-template-columns: repeat(3, 52px);
-    grid-template-rows: repeat(2, 52px);
-    gap: 8px;
   }
 
-  .control-button {
-    width: 52px;
-    height: 52px;
-    font-size: 28px;
+  .joystick-base {
+    width: 138px;
+    height: 138px;
   }
 }
 

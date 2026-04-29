@@ -3,7 +3,8 @@ const ctx = canvas.getContext("2d");
 const scoreElement = document.querySelector("#score");
 const livesElement = document.querySelector("#lives");
 const restartButton = document.querySelector("#restart");
-const controlButtons = document.querySelectorAll("[data-control]");
+const joystick = document.querySelector("#joystick");
+const joystickStick = document.querySelector("#joystick-stick");
 
 const player = {
   x: 80,
@@ -28,11 +29,10 @@ const enemy = {
 };
 
 const keys = {};
-const touchControls = {
-  left: false,
-  right: false,
-  up: false,
-  down: false,
+const joystickControl = {
+  x: 0,
+  y: 0,
+  pointerId: null,
 };
 let score = 0;
 let lives = 3;
@@ -55,62 +55,71 @@ restartButton.addEventListener("click", () => {
   resetGame();
 });
 
-function setTouchControl(direction, isPressed, button) {
-  touchControls[direction] = isPressed;
-  button.classList.toggle("is-pressed", isPressed);
+function resetJoystick() {
+  joystickControl.x = 0;
+  joystickControl.y = 0;
+  joystickControl.pointerId = null;
+  joystickStick.style.transform = "translate(0, 0)";
 }
 
-controlButtons.forEach((button) => {
-  const direction = button.dataset.control;
+function updateJoystick(event) {
+  const rect = joystick.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const maxDistance = rect.width * 0.32;
+  const rawX = event.clientX - centerX;
+  const rawY = event.clientY - centerY;
+  const distance = Math.hypot(rawX, rawY);
+  const limitedDistance = Math.min(distance, maxDistance);
+  const angle = Math.atan2(rawY, rawX);
+  const stickX = Math.cos(angle) * limitedDistance;
+  const stickY = Math.sin(angle) * limitedDistance;
 
-  button.addEventListener("contextmenu", (event) => {
-    event.preventDefault();
-  });
+  joystickControl.x = maxDistance === 0 ? 0 : stickX / maxDistance;
+  joystickControl.y = maxDistance === 0 ? 0 : stickY / maxDistance;
+  joystickStick.style.transform = `translate(${stickX}px, ${stickY}px)`;
+}
 
-  button.addEventListener("pointerdown", (event) => {
-    event.preventDefault();
-    setTouchControl(direction, true, button);
-    button.setPointerCapture(event.pointerId);
-  });
+joystick.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
+});
 
-  button.addEventListener("pointerup", (event) => {
-    event.preventDefault();
-    setTouchControl(direction, false, button);
-  });
+joystick.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  joystickControl.pointerId = event.pointerId;
+  joystick.setPointerCapture(event.pointerId);
+  updateJoystick(event);
+});
 
-  button.addEventListener("pointercancel", (event) => {
-    event.preventDefault();
-    setTouchControl(direction, false, button);
-  });
+joystick.addEventListener("pointermove", (event) => {
+  if (event.pointerId !== joystickControl.pointerId) return;
+  event.preventDefault();
+  updateJoystick(event);
+});
 
-  button.addEventListener("pointerleave", (event) => {
-    event.preventDefault();
-    setTouchControl(direction, false, button);
-  });
+joystick.addEventListener("pointerup", (event) => {
+  if (event.pointerId !== joystickControl.pointerId) return;
+  event.preventDefault();
+  resetJoystick();
+});
 
-  button.addEventListener(
-    "touchstart",
+joystick.addEventListener("pointercancel", (event) => {
+  if (event.pointerId !== joystickControl.pointerId) return;
+  event.preventDefault();
+  resetJoystick();
+});
+
+joystick.addEventListener("pointerleave", (event) => {
+  if (event.pointerId !== joystickControl.pointerId) return;
+  event.preventDefault();
+  resetJoystick();
+});
+
+["touchstart", "touchmove", "touchend", "touchcancel"].forEach((eventName) => {
+  joystick.addEventListener(
+    eventName,
     (event) => {
       event.preventDefault();
-      setTouchControl(direction, true, button);
-    },
-    { passive: false }
-  );
-
-  button.addEventListener(
-    "touchend",
-    (event) => {
-      event.preventDefault();
-      setTouchControl(direction, false, button);
-    },
-    { passive: false }
-  );
-
-  button.addEventListener(
-    "touchcancel",
-    (event) => {
-      event.preventDefault();
-      setTouchControl(direction, false, button);
     },
     { passive: false }
   );
@@ -123,10 +132,22 @@ document.addEventListener("contextmenu", (event) => {
 });
 
 function movePlayer() {
-  if (keys.arrowleft || keys.a || touchControls.left) player.x -= player.speed;
-  if (keys.arrowright || keys.d || touchControls.right) player.x += player.speed;
-  if (keys.arrowup || keys.w || touchControls.up) player.y -= player.speed;
-  if (keys.arrowdown || keys.s || touchControls.down) player.y += player.speed;
+  let moveX = joystickControl.x;
+  let moveY = joystickControl.y;
+
+  if (keys.arrowleft || keys.a) moveX -= 1;
+  if (keys.arrowright || keys.d) moveX += 1;
+  if (keys.arrowup || keys.w) moveY -= 1;
+  if (keys.arrowdown || keys.s) moveY += 1;
+
+  const moveLength = Math.hypot(moveX, moveY);
+  if (moveLength > 1) {
+    moveX /= moveLength;
+    moveY /= moveLength;
+  }
+
+  player.x += moveX * player.speed;
+  player.y += moveY * player.speed;
 
   player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
   player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
