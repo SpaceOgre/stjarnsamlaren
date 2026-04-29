@@ -55,6 +55,11 @@ restartButton.addEventListener("click", () => {
   resetGame();
 });
 
+function setTouchControl(direction, isPressed, button) {
+  touchControls[direction] = isPressed;
+  button.classList.toggle("is-pressed", isPressed);
+}
+
 controlButtons.forEach((button) => {
   const direction = button.dataset.control;
 
@@ -64,28 +69,57 @@ controlButtons.forEach((button) => {
 
   button.addEventListener("pointerdown", (event) => {
     event.preventDefault();
-    touchControls[direction] = true;
-    button.classList.add("is-pressed");
+    setTouchControl(direction, true, button);
     button.setPointerCapture(event.pointerId);
   });
 
   button.addEventListener("pointerup", (event) => {
     event.preventDefault();
-    touchControls[direction] = false;
-    button.classList.remove("is-pressed");
+    setTouchControl(direction, false, button);
   });
 
   button.addEventListener("pointercancel", (event) => {
     event.preventDefault();
-    touchControls[direction] = false;
-    button.classList.remove("is-pressed");
+    setTouchControl(direction, false, button);
   });
 
   button.addEventListener("pointerleave", (event) => {
     event.preventDefault();
-    touchControls[direction] = false;
-    button.classList.remove("is-pressed");
+    setTouchControl(direction, false, button);
   });
+
+  button.addEventListener(
+    "touchstart",
+    (event) => {
+      event.preventDefault();
+      setTouchControl(direction, true, button);
+    },
+    { passive: false }
+  );
+
+  button.addEventListener(
+    "touchend",
+    (event) => {
+      event.preventDefault();
+      setTouchControl(direction, false, button);
+    },
+    { passive: false }
+  );
+
+  button.addEventListener(
+    "touchcancel",
+    (event) => {
+      event.preventDefault();
+      setTouchControl(direction, false, button);
+    },
+    { passive: false }
+  );
+});
+
+document.addEventListener("contextmenu", (event) => {
+  if (event.target.closest(".touch-controls")) {
+    event.preventDefault();
+  }
 });
 
 function movePlayer() {
