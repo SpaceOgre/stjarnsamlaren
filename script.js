@@ -58,6 +58,10 @@ restartButton.addEventListener("click", () => {
 controlButtons.forEach((button) => {
   const direction = button.dataset.control;
 
+  button.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+  });
+
   button.addEventListener("pointerdown", (event) => {
     event.preventDefault();
     touchControls[direction] = true;
@@ -65,17 +69,20 @@ controlButtons.forEach((button) => {
     button.setPointerCapture(event.pointerId);
   });
 
-  button.addEventListener("pointerup", () => {
+  button.addEventListener("pointerup", (event) => {
+    event.preventDefault();
     touchControls[direction] = false;
     button.classList.remove("is-pressed");
   });
 
-  button.addEventListener("pointercancel", () => {
+  button.addEventListener("pointercancel", (event) => {
+    event.preventDefault();
     touchControls[direction] = false;
     button.classList.remove("is-pressed");
   });
 
-  button.addEventListener("pointerleave", () => {
+  button.addEventListener("pointerleave", (event) => {
+    event.preventDefault();
     touchControls[direction] = false;
     button.classList.remove("is-pressed");
   });
