@@ -135,7 +135,7 @@ canvas {
   font-size: 13px;
 }
 
-@media (pointer: fine) and (min-width: 760px) {
+@media (hover: hover) and (pointer: fine) and (min-width: 1000px) {
   .game-shell {
     width: min(94vw, 760px);
   }
